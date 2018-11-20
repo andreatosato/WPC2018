@@ -22,22 +22,29 @@ namespace DurableApp.OrdineCliente
             // Se è un nuovo tentativo, imposto l'IdOrdine
             if (!context.IsReplaying)
                 ordineAcquisto.IdOrdine = context.InstanceId;
-
+            
+            // Utilizzo l'orario di start della funzione
+            DateTime startManagerDatetime = context.CurrentUtcDateTime;
+            
             // TODO: Salva l'ordine in un DB.
             string mailInstance;
             string smsInstance;
 
+            // Invia notifica ordine via SMS
+            smsInstance = await context.CallActivityWithRetryAsync<string>(
+                Workflow.NotificaSmsOrdineCliente,
+                new RetryOptions(TimeSpan.FromSeconds(5), 10),
+                ordineAcquisto);
 
-            smsInstance = await context.CallActivityAsync<string>(Workflow.NotificaSmsOrdineCliente, ordineAcquisto);
-            Log.Information($"OrdineClienteManager: SmsInstance {smsInstance}");
+            // Invia notifica ordine via Mail
             mailInstance = await context.CallActivityAsync<string>(Workflow.InviaMailOrdineCliente, ordineAcquisto);
             Log.Information($"OrdineClienteManager: MailInstance {mailInstance}");
                 
             //TODO: abilitare Human Interaction
-            //if (!string.IsNullOrEmpty(mailInstance))
-            //{
-            //    await context.CallSubOrchestratorAsync(Workflow.AttendiOrdineCliente, ordineAcquisto.IdOrdine);
-            //}
+            if (!string.IsNullOrEmpty(mailInstance))
+            {
+                await context.CallSubOrchestratorAsync(Workflow.AttendiOrdineCliente, ordineAcquisto.IdOrdine);
+            }
 
             return new OrdiniAcquistoTable
             {

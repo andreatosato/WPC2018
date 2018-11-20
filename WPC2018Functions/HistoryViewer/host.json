@@ -1,6 +1,6 @@
 {
   "version": "2.0",
   "durableTask": {
-    "HubName": "WPC2018DurableApp"
+    "HubName": "WPC2018HistoryViewer"
   }
 }
