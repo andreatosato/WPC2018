@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace DurableApp.OrdineCliente.Model
 {
     public class OrdiniAcquistoModel
     {
+        public string IdConfirmation { get; set; }
         public string IdOrdine { get; set; }
         public Cliente ClienteCorrente { get; set; }
         public IEnumerable<Articolo> Articoli { get; set; }
@@ -26,10 +28,8 @@ namespace DurableApp.OrdineCliente.Model
         }
     }
 
-    public class OrdiniAcquistoTable
+    public class OrdiniAcquistoTable : TableEntity, ITableEntity
     {
-        public string PartitionKey { get; set; }
-        public string RowKey { get; set; }
         public OrdiniAcquistoModel Ordine { get; set; }
         public string InviaMailOrdineCliente { get; set; }
         public string NotificaSmsOrdineCliente { get; set; }

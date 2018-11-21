@@ -15,44 +15,32 @@ namespace DurableApp.OrdineCliente
     {
         [FunctionName("OrdineClienteManager")]
         [return: Table("OrdiniCliente")]
-        public static async Task<OrdiniAcquistoTable> Run(
+        public static async Task Run(
             [OrchestrationTrigger] DurableOrchestrationContext context)
         {
             OrdiniAcquistoModel ordineAcquisto = context.GetInput<OrdiniAcquistoModel>();
-            // Se è un nuovo tentativo, imposto l'IdOrdine
+            // Utilizzo un Id di esempio. 
             ordineAcquisto.IdOrdine = context.InstanceId;
-            
-            // Utilizzo l'orario di start della funzione
-            DateTime startManagerDatetime = context.CurrentUtcDateTime;
-            
-            // TODO: Salva l'ordine in un DB.
-            string mailInstance;
-            string smsInstance = "";
 
             // Invia notifica ordine via SMS
-            await context.CallActivityAsync<string>(
+            string smsInstance = await context.CallActivityAsync<string>(
                 Workflow.NotificaSmsOrdineCliente,
                 ordineAcquisto);
+            
+            // Il SubOrchestrator non è necessario, è un esempio
+            await context.CallSubOrchestratorAsync(Workflow.AttendiOrdineCliente, ordineAcquisto);
 
-            // Invia notifica ordine via Mail
-            mailInstance = await context.CallActivityWithRetryAsync<string>(Workflow.InviaMailOrdineCliente, new RetryOptions(TimeSpan.FromSeconds(5), 10), ordineAcquisto);
-            Log.Information($"OrdineClienteManager: MailInstance {mailInstance}");
-                
-            //TODO: abilitare Human Interaction
-            if (!string.IsNullOrEmpty(mailInstance))
-            {
-                await context.CallSubOrchestratorAsync(Workflow.AttendiOrdineCliente, ordineAcquisto.IdOrdine, ordineAcquisto.IdOrdine);
-            }
-
-            return new OrdiniAcquistoTable
+            // Utilizzo l'orario di start della funzione
+            DateTime startManagerDatetime = context.CurrentUtcDateTime;
+            await context.CallActivityAsync(Workflow.OrdineConfermato, new OrdiniAcquistoTable
             {
                 PartitionKey = ordineAcquisto.IdOrdine,
-                RowKey = $"{smsInstance}-{mailInstance}",
+                RowKey = $"{smsInstance}-{context.InstanceId}",
                 Ordine = ordineAcquisto,
                 NotificaSmsOrdineCliente = smsInstance,
-                InviaMailOrdineCliente = mailInstance,
-                Elaborazione = DateTimeOffset.UtcNow
-            };
+                InviaMailOrdineCliente = context.InstanceId,
+                Elaborazione = startManagerDatetime
+            });
         }
     }
 }

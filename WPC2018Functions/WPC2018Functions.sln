@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApprovalApp", "ApprovalApp\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DurableApp", "DurableApp\DurableApp.csproj", "{1893949E-17E6-4A63-9E7D-E03883694728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HistoryViewer", "HistoryViewer\HistoryViewer.csproj", "{E877B17E-0B3F-48DE-A594-72109AA426EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HistoryViewer", "HistoryViewer\HistoryViewer.csproj", "{E877B17E-0B3F-48DE-A594-72109AA426EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
