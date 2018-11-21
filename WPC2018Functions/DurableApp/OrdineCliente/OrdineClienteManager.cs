@@ -30,9 +30,9 @@ namespace DurableApp.OrdineCliente
             string smsInstance = "";
 
             // Invia notifica ordine via SMS
-            //await context.CallActivityAsync<string>(
-            //    Workflow.NotificaSmsOrdineCliente,
-            //    ordineAcquisto);
+            await context.CallActivityAsync<string>(
+                Workflow.NotificaSmsOrdineCliente,
+                ordineAcquisto);
 
             // Invia notifica ordine via Mail
             mailInstance = await context.CallActivityWithRetryAsync<string>(Workflow.InviaMailOrdineCliente, new RetryOptions(TimeSpan.FromSeconds(5), 10), ordineAcquisto);
@@ -41,7 +41,7 @@ namespace DurableApp.OrdineCliente
             //TODO: abilitare Human Interaction
             if (!string.IsNullOrEmpty(mailInstance))
             {
-                await context.CallSubOrchestratorAsync(Workflow.AttendiOrdineCliente, ordineAcquisto.IdOrdine);
+                await context.CallSubOrchestratorAsync(Workflow.AttendiOrdineCliente, ordineAcquisto.IdOrdine, ordineAcquisto.IdOrdine);
             }
 
             return new OrdiniAcquistoTable
