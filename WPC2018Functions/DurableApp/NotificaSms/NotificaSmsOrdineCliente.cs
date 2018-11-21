@@ -13,14 +13,40 @@ using Twilio.Types;
 
 namespace DurableApp.NotificaSms
 {
+    //public static class NotificaSmsOrdineCliente
+    //{
+    //    [FunctionName(Workflow.NotificaSmsOrdineCliente)]
+    //    public static CreateMessageOptions Run(
+    //       [ActivityTrigger] OrdiniAcquistoModel ordiniAcquisto,
+    //       [TwilioSms(AccountSidSetting = "TwilioAccountSid",
+    //                  AuthTokenSetting = "TwilioAuthToken")]
+    //        out CreateMessageOptions message,
+    //        Microsoft.Extensions.Logging.ILogger logger)
+    //    {
+    //        logger.UseSerilog();
+
+    //        string currentInstance = Guid.NewGuid().ToString("N");
+    //        Log.Information($"NotificaSmsOrdineCliente : {currentInstance}");
+    //        // Get a random number generator with a random seed (not time-based)
+
+    //        Log.Information($"Invio ordine {ordiniAcquisto.IdOrdine} a {ordiniAcquisto.ClienteCorrente.NumeroTelefono}.");
+    //        message = new CreateMessageOptions(new PhoneNumber(ordiniAcquisto.ClienteCorrente.NumeroTelefono))
+    //        {
+    //            Body = $"L'ordine {ordiniAcquisto.IdOrdine} è preso in carico. Conferma la mail",
+    //            From = new PhoneNumber("+447533003163")
+    //        };
+    //        //return currentInstance;
+    //        return message;
+    //    }
+    //}
+
     public static class NotificaSmsOrdineCliente
     {
         [FunctionName(Workflow.NotificaSmsOrdineCliente)]
-        public static CreateMessageOptions Run(
+        public static void Run(
            [ActivityTrigger] OrdiniAcquistoModel ordiniAcquisto,
            [TwilioSms(AccountSidSetting = "TwilioAccountSid",
-                      AuthTokenSetting = "TwilioAuthToken",
-                      From = "%TwilioPhoneNumber%")]
+                      AuthTokenSetting = "TwilioAuthToken")]
             out CreateMessageOptions message,
             Microsoft.Extensions.Logging.ILogger logger)
         {
@@ -33,11 +59,11 @@ namespace DurableApp.NotificaSms
             Log.Information($"Invio ordine {ordiniAcquisto.IdOrdine} a {ordiniAcquisto.ClienteCorrente.NumeroTelefono}.");
             message = new CreateMessageOptions(new PhoneNumber(ordiniAcquisto.ClienteCorrente.NumeroTelefono))
             {
-                Body = $"L'ordine {ordiniAcquisto.IdOrdine} è preso in carico. Conferma la mail"
+                Body = $"L'ordine {ordiniAcquisto.IdOrdine} è preso in carico. Conferma la mail",
+                From = new PhoneNumber("+447533003163")
             };
             //return currentInstance;
-            return message;
+            //return message;
         }
     }
-    
 }

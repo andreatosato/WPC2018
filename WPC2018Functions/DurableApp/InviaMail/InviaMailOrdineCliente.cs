@@ -25,7 +25,7 @@ namespace DurableApp.InviaMail
             Log.Information($"Invio ordine {ordiniAcquisto.IdOrdine} a {ordiniAcquisto.ClienteCorrente.NumeroTelefono}.");
             message = new SendGridMessage
             {
-                Subject = $"GlobalAzureBootcamp 2018"                
+                Subject = $"WPC 2018"                
             };
             message.AddTo(toMail);
             Content content = new Content

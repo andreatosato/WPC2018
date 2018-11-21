@@ -20,24 +20,22 @@ namespace DurableApp.OrdineCliente
         {
             OrdiniAcquistoModel ordineAcquisto = context.GetInput<OrdiniAcquistoModel>();
             // Se è un nuovo tentativo, imposto l'IdOrdine
-            if (!context.IsReplaying)
-                ordineAcquisto.IdOrdine = context.InstanceId;
+            ordineAcquisto.IdOrdine = context.InstanceId;
             
             // Utilizzo l'orario di start della funzione
             DateTime startManagerDatetime = context.CurrentUtcDateTime;
             
             // TODO: Salva l'ordine in un DB.
             string mailInstance;
-            string smsInstance;
+            string smsInstance = "";
 
             // Invia notifica ordine via SMS
-            smsInstance = await context.CallActivityWithRetryAsync<string>(
-                Workflow.NotificaSmsOrdineCliente,
-                new RetryOptions(TimeSpan.FromSeconds(5), 10),
-                ordineAcquisto);
+            //await context.CallActivityAsync<string>(
+            //    Workflow.NotificaSmsOrdineCliente,
+            //    ordineAcquisto);
 
             // Invia notifica ordine via Mail
-            mailInstance = await context.CallActivityAsync<string>(Workflow.InviaMailOrdineCliente, ordineAcquisto);
+            mailInstance = await context.CallActivityWithRetryAsync<string>(Workflow.InviaMailOrdineCliente, new RetryOptions(TimeSpan.FromSeconds(5), 10), ordineAcquisto);
             Log.Information($"OrdineClienteManager: MailInstance {mailInstance}");
                 
             //TODO: abilitare Human Interaction
