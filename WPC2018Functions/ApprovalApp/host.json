@@ -1,6 +1,8 @@
 {
   "version": "2.0",
-  "durableTask": {
-    "HubName": "WPC2018ApprovaApp"
+  "extensions": {
+    "durableTask": {
+      "HubName": "WPC2018ApprovaApp"
+    }
   }
 }
